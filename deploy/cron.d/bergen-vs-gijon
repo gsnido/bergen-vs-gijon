@@ -1,0 +1,8 @@
+# /etc/cron.d/bergen-vs-gijon — daily refresh of climate.json
+# Must be owned by root, mode 644, and end with a newline.
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=you@example.com
+
+# m  h  dom mon dow  user        command
+  0  4   *   *   *   climatedash /opt/bergen-vs-gijon/run.sh

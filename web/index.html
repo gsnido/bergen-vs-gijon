@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bergen vs Gijón — A Climate of Rain</title>
+<meta name="description" content="An interactive comparison of rainfall in Bergen, Norway and Gijón, Spain — built from 30 years of ERA5 daily precipitation data." />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364c5d4' stroke-width='2'%3E%3Cpath d='M8 19v1M8 14v1M16 19v1M16 14v1M12 21v1M12 16v1M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M8 19v1M8 14v1M16 19v1M16 14v1M12 21v1M12 16v1M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
+    </svg>
+    <div>
+      <div class="brand-title">Two Cities, One Question</div>
+      <div class="brand-sub">Does it really rain more often in Bergen than Gijón?</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <span class="badge" id="source-badge">Source: <a href="https://open-meteo.com/en/docs/historical-weather-api" target="_blank" rel="noopener">Open-Meteo ERA5</a></span>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- Hero KPI strip -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>A 30-year tale of <span class="rain-text">rain</span>.</h1>
+      <p class="lede">Bergen and Gijón are both north-facing, sea-soaked cities at the mercy of Atlantic weather — but the data tells a one-sided story. This dashboard compares daily precipitation between <strong>1995&nbsp;and&nbsp;2025</strong>, then watches 2026 unfold against the <span class="gijon-text">Gijón</span> climate normal.</p>
+      <p class="meta-line" id="meta-line">Loading data…</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi" data-city="bergen">
+        <div class="kpi-city">
+          <span class="dot bergen-dot"></span>
+          <span>Bergen, Norway</span>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-cell">
+            <div class="kpi-value" id="kpi-bergen-rd">—</div>
+            <div class="kpi-label">avg rainy days / yr</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-value" id="kpi-bergen-mm">—</div>
+            <div class="kpi-label">avg annual mm</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-value" id="kpi-bergen-streak">—</div>
+            <div class="kpi-label">longest wet streak</div>
+          </div>
+        </div>
+      </div>
+      <div class="kpi" data-city="gijon">
+        <div class="kpi-city">
+          <span class="dot gijon-dot"></span>
+          <span>Gijón, Spain</span>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-cell">
+            <div class="kpi-value" id="kpi-gijon-rd">—</div>
+            <div class="kpi-label">avg rainy days / yr</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-value" id="kpi-gijon-mm">—</div>
+            <div class="kpi-label">avg annual mm</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-value" id="kpi-gijon-streak">—</div>
+            <div class="kpi-label">longest wet streak</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured chart: 2026 YTD vs Gijón normals — CUMULATIVE RAINY DAYS -->
+  <section class="panel feature-panel">
+    <div class="panel-head">
+      <div>
+        <h2>2026 in progress — vs Gijón's climate normal</h2>
+        <p class="panel-sub">Cumulative count of <strong>rainy days</strong> (days with more than 1&nbsp;mm of precipitation) since January&nbsp;1. Bergen's 2026 line is plotted alongside Gijón's 1995–2024 normal envelope (10th–90th percentile band, with median). Toggle to add Bergen's own normal band for context.</p>
+      </div>
+      <div class="control-row">
+        <label class="switch">
+          <input type="checkbox" id="show-bergen-band" />
+          <span class="switch-track"></span>
+          <span class="switch-label">Show Bergen normal band</span>
+        </label>
+        <label class="switch">
+          <input type="checkbox" id="show-gijon-2026" checked />
+          <span class="switch-track"></span>
+          <span class="switch-label">Show Gijón 2026 YTD</span>
+        </label>
+      </div>
+    </div>
+    <div class="chart-wrap chart-wrap-large">
+      <canvas id="chart-ytd"></canvas>
+    </div>
+    <div class="ratio-bar" id="ratio-bar"></div>
+  </section>
+
+  <!-- Annual trio -->
+  <div class="trio">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Rainy days per year</h2>
+        <p class="panel-sub">Days with more than 1&nbsp;mm of precipitation.</p>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-rainy"></canvas></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Annual precipitation (mm)</h2>
+        <p class="panel-sub">Total liquid-equivalent rainfall summed across the calendar year.</p>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-total"></canvas></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Consecutive rainy days</h2>
+        <p class="panel-sub">Longest single streak of consecutive days with rain &gt; 1&nbsp;mm each year.</p>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-streak"></canvas></div>
+    </section>
+  </div>
+
+  <!-- Streak distribution -->
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>How long does the rain last?</h2>
+        <p class="panel-sub">Distribution of consecutive-rainy-day streak lengths, pooled across 1995&ndash;2024. Each bar shows the average number of streaks per year of that length.</p>
+      </div>
+      <div class="control-row">
+        <label class="select-wrap">
+          <span class="select-label">y-axis</span>
+          <select id="streak-scale">
+            <option value="linear" selected>Linear</option>
+            <option value="log">Log (highlights tails)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="chart-streak-dist"></canvas></div>
+  </section>
+
+  <!-- Footer / methodology -->
+  <section class="methodology">
+    <h3>Method &amp; sources</h3>
+    <ul>
+      <li><strong>Data:</strong> ERA5 reanalysis daily precipitation totals via the <a href="https://open-meteo.com/en/docs/historical-weather-api" target="_blank" rel="noopener">Open-Meteo Historical Weather API</a>.</li>
+      <li><strong>Locations:</strong> Bergen (60.39&deg;N, 5.32&deg;E) and Gijón (43.53&deg;N, 5.66&deg;W).</li>
+      <li><strong>Period:</strong> 1995&ndash;2025 daily totals; <em>climate normal</em> = 1995&ndash;2024 (30-year window). 2026 year-to-date through <span id="meta-ytd">—</span>.</li>
+      <li><strong>Rainy day:</strong> any day with &gt;&nbsp;1.0&nbsp;mm of precipitation. The 1&nbsp;mm threshold removes trace events that bias counts upward for damp climates.</li>
+      <li><strong>Consecutive streak:</strong> uninterrupted run of rainy days. Single-day rains count as a streak of length 1.</li>
+    </ul>
+    <p class="footer-note">Built by Gon, by way of 30 years of soggy data.</p>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

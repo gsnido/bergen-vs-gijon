@@ -1,0 +1,10 @@
+/var/log/bergen-vs-gijon/update.log {
+    monthly
+    rotate 12
+    compress
+    delaycompress
+    missingok
+    notifempty
+    su climatedash climatedash
+    create 0644 climatedash climatedash
+}

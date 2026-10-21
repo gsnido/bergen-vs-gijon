@@ -1,0 +1,5 @@
+# Generated daily by scripts/update_climate.py
+web/climate.json
+__pycache__/
+*.pyc
+.climate.*.json.tmp
